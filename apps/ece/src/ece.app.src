@@ -1,0 +1,27 @@
+{
+	application,
+	ece,
+	[
+		{description, "An OTP application"},
+		{vsn, "0.1.0"},
+		{registered, []},
+		{mod, {ece_app, []}},
+
+		{applications,
+			[
+				kernel,
+				stdlib,
+				cowboy
+			]
+		},
+
+		{env, []},
+		{modules, []},
+
+		{maintainers, [
+			"Ralf Th. Pietsch <ratopi@abwesend.de>"
+		]},
+
+		{licenses, ["Apache 2.0"]},
+		{links, []}
+	]}.
