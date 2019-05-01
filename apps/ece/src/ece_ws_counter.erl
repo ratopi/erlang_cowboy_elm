@@ -12,24 +12,25 @@
 %% API
 -export([init/2]).
 
-init(Request, Opts) ->
+init(Request, Method) ->
+	case is_legal_method(Method) of
+		true ->
 
-	{ok, Counter} = ece_global_counter:increment(),
+			{ok, Counter} = apply(ece_global_counter, Method, []),
 
-	JSON = jsx:encode(
-		#{
-			counter => Counter
-		}
-	),
+			Result =
+				#{
+					counter => Counter
+				},
 
-	Response =
-		cowboy_req:reply(
-			200,
-			#{
-				<<"content-type">> => <<"application/json">>
-			},
-			JSON,
-			Request
-		),
+			ece_ws:send_json(Result, Request, Method);
 
-	{ok, Response, Opts}.
+		false ->
+			ece_ws:send_error(<<"Illegal Method">>, Request, Method)
+	end.
+
+
+is_legal_method(get) -> true;
+is_legal_method(increment) -> true;
+is_legal_method(decrement) -> true;
+is_legal_method(_) -> false.

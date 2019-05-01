@@ -36,7 +36,10 @@ get_cowboy_dispatch() ->
 		[
 			{"/hello", ece_ws_hello, whatever},
 
-			{"/counter", ece_ws_counter, start},
+			{"/counter", ece_ws_counter, get},
+			{"/counter/increment", ece_ws_counter, increment},
+			{"/counter/decrement", ece_ws_counter, decrement},
+			{"/counter/error", ece_ws_counter, error},
 
 			% {"/ws", ece_websocket, []},
 
