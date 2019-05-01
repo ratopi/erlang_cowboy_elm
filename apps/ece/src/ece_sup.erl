@@ -36,8 +36,15 @@ init(_Args) ->
 
 	ChildSpecs = [
 		#{
-			id => ece_cowboy,
-			start => {ece_cowboy, start_link, []},
+			id => ece_global_counter,
+			start => {ece_global_counter, start_link, []},
+			restart => permanent,
+			shutdown => brutal_kill,
+			type => worker
+		},
+		#{
+			id => ece_cowboy_sup,
+			start => {ece_cowboy_sup, start_link, []},
 			restart => permanent,
 			shutdown => brutal_kill,
 			type => supervisor

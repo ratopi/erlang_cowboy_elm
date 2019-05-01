@@ -6,7 +6,7 @@
 %%% @end
 %%% Created : 13. Okt 2018 10:30
 %%%-------------------------------------------------------------------
--module(ece_cowboy).
+-module(ece_cowboy_sup).
 -author("Ralf Thomas Pietsch <ratopi@abwesend.de>").
 
 %% API
@@ -17,10 +17,12 @@ start_link() ->
 		cowboy:start_clear(
 			api_http_listener,
 			[
-				{port, get_env(http_port, 8080)}
+				{port, application:get_env(ece, http_port, 8080)}
 			],
 			#{
-				env => #{dispatch => get_cowboy_dispatch()}
+				env => #{
+					dispatch => get_cowboy_dispatch()
+				}
 			}
 		).
 
@@ -32,16 +34,14 @@ get_cowboy_dispatch() ->
 	Hosts = '_',
 	Routes =
 		[
-			{"/", cowboy_static, {priv_file, ece, "static/index.html"}},
+			{"/hello", ece_ws_hello, whatever},
+
+			{"/counter", ece_ws_counter, start},
+
 			% {"/ws", ece_websocket, []},
+
+			{"/", cowboy_static, {priv_file, ece, "static/index.html"}},
 			{"/[...]", cowboy_static, {priv_dir, ece, "static"}}
 		],
 	Dispatch = cowboy_router:compile([{Hosts, Routes}]),
 	Dispatch.
-
-
-get_env(Key, Default) ->
-	case application:get_env(Key) of
-		{ok, Value} -> Value;
-		_ -> Default
-	end.
