@@ -15,16 +15,10 @@ main =
         }
 
 
-type Counter
-  = Int
-
-
 type Msg
-    = Get
-    | GotCounter (Result Http.Error Int)
+    = GotCounter (Result Http.Error Int)
     | Increment
     | Decrement
-    | GotText (Result Http.Error String)
 
 type Model
   = Failure
@@ -37,21 +31,11 @@ init : () -> (Model, Cmd Msg)
 init _ =
     ( Loading, get_counter )
 
-xinit _ =
-  ( Loading
-  , Http.get
-      { url = "counter"
-      , expect = Http.expectString GotText
-      }
-  )
-
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Get ->
-        (model, Cmd.none)
-
+      
     GotCounter result ->
         case result of
             Ok n ->
@@ -59,27 +43,18 @@ update msg model =
             Err _ ->
                 (Failure, Cmd.none)
 
-
     Increment ->
         increment model
 
     Decrement ->
       decrement model
 
-    GotText result ->
-      case result of
-        Ok fullText ->
-            (Counter 1000, Cmd.none)
---          (Success fullText, Cmd.none)
-
-        Err _ ->
-          (Failure, Cmd.none)
-
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
+
 
 
 view : Model -> Html Msg
