@@ -1,11 +1,9 @@
 # ece - Erlang Cowboy Elm
 
-An example web application with an Erlang-Cowboy-BackEnd and an Elm-FrontEnd.
+An stupid simple example web application with an Erlang-Cowboy-BackEnd and an Elm-FrontEnd.
 
-## Build
+Increment and decrement a value on the server.
 
-    $ rebar3 compile
+## Run
 
-## Test
-
-	$ rebar3 ct
+    $ rebar3 shell
