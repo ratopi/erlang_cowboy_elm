@@ -44,10 +44,10 @@ update msg model =
                 (Failure, Cmd.none)
 
     Increment ->
-        increment model
+        (model, increment)
 
     Decrement ->
-      decrement model
+      (model, decrement)
 
 
 
@@ -101,22 +101,20 @@ counter_and_buttons n =
     ]
 
 
-increment : Model -> (Model, Cmd Msg)
-increment model =
-    case model of
-        Failure -> (Failure, Cmd.none)
-        Loading -> (Loading, Cmd.none)
-        Success _ -> (Counter 0, Cmd.none)
-        Counter n -> (Counter (n + 1), Cmd.none)
+increment : Cmd Msg
+increment =
+  Http.get
+      { url = "counter/increment"
+      , expect = Http.expectJson GotCounter counter_json_decode
+      }
 
 
-decrement : Model -> (Model, Cmd Msg)
-decrement model =
-    case model of
-        Failure -> (Failure, Cmd.none)
-        Loading -> (Loading, Cmd.none)
-        Success _ -> (Counter 0, Cmd.none)
-        Counter n -> (Counter (n - 1), Cmd.none)
+decrement : Cmd Msg
+decrement =
+  Http.get
+      { url = "counter/decrement"
+      , expect = Http.expectJson GotCounter counter_json_decode
+      }
 
 
 
