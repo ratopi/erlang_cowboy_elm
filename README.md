@@ -7,3 +7,7 @@ Increment and decrement a value on the server.
 ## Run
 
     $ rebar3 shell
+
+open a browser
+
+	http://localhost:8080/
