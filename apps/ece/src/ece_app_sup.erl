@@ -3,7 +3,7 @@
 %% @end
 %%%-------------------------------------------------------------------
 
--module(ece_sup).
+-module(ece_app_sup).
 
 -behaviour(supervisor).
 

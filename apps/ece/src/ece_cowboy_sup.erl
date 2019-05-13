@@ -4,7 +4,7 @@
 %%% @doc
 %%%
 %%% @end
-%%% Created : 13. Okt 2018 10:30
+%%% Created : 01. Jan 2019 14:30
 %%%-------------------------------------------------------------------
 -module(ece_cowboy_sup).
 -author("Ralf Thomas Pietsch <ratopi@abwesend.de>").
@@ -40,6 +40,10 @@ get_cowboy_dispatch() ->
 			{"/counter/increment", ece_ws_counter, increment},
 			{"/counter/decrement", ece_ws_counter, decrement},
 			{"/counter/error", ece_ws_counter, error},
+
+			{"/counter/watch", ece_ws_counter_watch, []},
+
+			{"/never_come_back", ece_ws_never_come_back, 5000},
 
 			% {"/ws", ece_websocket, []},
 

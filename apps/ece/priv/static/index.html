@@ -9,11 +9,24 @@
 <body>
 <div id="elm-node"></div>
 <script>
-Elm.Main.init(
-	{
-		node: document.getElementById("elm-node")
-	}
-)
+(function() {
+	var app =
+		Elm.Main.init(
+			{
+				node: document.getElementById("elm-node")
+			}
+		);
+
+	var sendChanges =
+		function()
+		{
+			console.log("changes");
+			app.ports.input.send("changes");
+			setTimeout(sendChanges, 1000);
+		};
+
+	sendChanges();
+})()
 </script>
 </body>
 </html>

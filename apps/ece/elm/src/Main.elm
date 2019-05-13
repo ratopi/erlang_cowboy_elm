@@ -19,35 +19,38 @@ type Msg
     = GotCounter (Result Http.Error Int)
     | Increment
     | Decrement
+    | Ignore (Result Http.Error ())
 
-type Model
-  = Failure
-  | Loading
-  | Success String
-  | Counter Int
+type alias Model =
+    { counter : Int
+    , failure : String
+    }
 
 
 init : () -> (Model, Cmd Msg)
 init _ =
-    ( Loading, get_counter )
+    ( {counter = 0, failure = ""}, initial_get_counter )
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
-  case msg of
-      
-    GotCounter result ->
-        case result of
-            Ok n ->
-                (Counter n, Cmd.none)
-            Err _ ->
-                (Failure, Cmd.none)
+    case msg of
 
-    Increment ->
-        (model, increment)
+        GotCounter result ->
+            case result of
+                Ok n ->
+                    ({model | counter = n}, watch_counter n)
+                Err _ ->
+                    ({model | failure = "Failure"}, watch_counter model.counter)
 
-    Decrement ->
-      (model, decrement)
+        Increment ->
+            (model, increment)
+
+        Decrement ->
+            (model, decrement)
+
+        Ignore _->
+            (model, Cmd.none)
 
 
 
@@ -85,11 +88,7 @@ counter_card model =
 
 
 counter model =
-    case model of
-        Failure -> text "Error"
-        Loading -> text "Loading..."
-        Success _ -> text "Success"
-        Counter n -> counter_and_buttons n
+    counter_and_buttons model.counter
 
 
 counter_and_buttons : Int -> Html Msg
@@ -105,7 +104,8 @@ increment : Cmd Msg
 increment =
   Http.get
       { url = "counter/increment"
-      , expect = Http.expectJson GotCounter counter_json_decode
+      , expect = Http.expectWhatever Ignore
+--      , expect = Http.expectJson GotCounter counter_json_decode
       }
 
 
@@ -113,15 +113,21 @@ decrement : Cmd Msg
 decrement =
   Http.get
       { url = "counter/decrement"
-      , expect = Http.expectJson GotCounter counter_json_decode
+      , expect = Http.expectWhatever Ignore
       }
 
 
-
-get_counter : Cmd Msg
-get_counter =
+initial_get_counter : Cmd Msg
+initial_get_counter =
   Http.get
       { url = "counter"
+      , expect = Http.expectJson GotCounter counter_json_decode
+      }
+
+watch_counter : Int -> Cmd Msg
+watch_counter n =
+  Http.get
+      { url = "counter/watch?counter=" ++ String.fromInt n
       , expect = Http.expectJson GotCounter counter_json_decode
       }
 
