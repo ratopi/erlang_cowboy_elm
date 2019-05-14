@@ -22,14 +22,14 @@ type Msg
     | Ignore (Result Http.Error ())
 
 type alias Model =
-    { counter : Int
+    { counter : Maybe Int
     , failure : String
     }
 
 
 init : () -> (Model, Cmd Msg)
 init _ =
-    ( {counter = 0, failure = ""}, initial_get_counter )
+    ( {counter = Nothing, failure = ""}, initial_get_counter )
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -39,7 +39,7 @@ update msg model =
         GotCounter result ->
             case result of
                 Ok n ->
-                    ({model | counter = n}, watch_counter n)
+                    ({model | counter = Just n}, watch_counter <| Just n)
                 Err _ ->
                     ({model | failure = "Failure"}, watch_counter model.counter)
 
@@ -76,6 +76,7 @@ nav_bar =
     ]
 
 
+counter_card : Model -> Html Msg
 counter_card model =
     div [ class "card" ] [
         div [ class "card-header" ] [
@@ -87,8 +88,11 @@ counter_card model =
     ]
 
 
+counter : Model -> Html Msg
 counter model =
-    counter_and_buttons model.counter
+    case model.counter of
+        Nothing -> div [] []
+        Just v -> counter_and_buttons v
 
 
 counter_and_buttons : Int -> Html Msg
@@ -124,12 +128,16 @@ initial_get_counter =
       , expect = Http.expectJson GotCounter counter_json_decode
       }
 
-watch_counter : Int -> Cmd Msg
+watch_counter : Maybe Int -> Cmd Msg
 watch_counter n =
-  Http.get
-      { url = "counter/watch?counter=" ++ String.fromInt n
-      , expect = Http.expectJson GotCounter counter_json_decode
-      }
+    case n of
+        Nothing ->
+            initial_get_counter
+        Just v ->
+            Http.get
+                { url = "counter/watch?counter=" ++ String.fromInt v
+                , expect = Http.expectJson GotCounter counter_json_decode
+                }
 
 counter_json_decode : JD.Decoder Int
 counter_json_decode =
